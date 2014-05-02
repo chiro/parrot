@@ -15,7 +15,7 @@ type Player interface {
 }
 
 type GameState struct {
-	Grid [][]int
+	Grid [4][4]int
 	Won bool
 	Moved bool
 	Over bool
