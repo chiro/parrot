@@ -43,6 +43,21 @@ func handToString(h Hand) string {
 	}
 }
 
+func showHand(h Hand) {
+	s := "Move to "
+	switch h {
+	case Up:
+		s += "Up"
+	case Right:
+		s += "Right"
+	case Down:
+		s += "Down"
+	case Left:
+		s += "Left"
+	}
+	fmt.Println(s)
+}
+
 func intToHand(i int) Hand {
 	if i == 0 {
 		return Up

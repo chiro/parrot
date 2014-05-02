@@ -11,7 +11,6 @@ func (p *ManualPlayer) SetState(s GameState) {
 }
 
 func (p *ManualPlayer) NextHand() Hand {
-	p.State.showState()
 	var i string
 	_, err := fmt.Scanf("%s", &i)
 	if err != nil {
