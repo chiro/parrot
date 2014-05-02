@@ -15,7 +15,7 @@ func main() {
 	var m *Manager = new(Manager)
 	// Please change the next line to change AI.
 	// var p Player = new(RandomPlayer)
-	var p Player = new(MonteCalroPlayer)
+	var p Player = new(MonteCarloPlayer)
 	m.Initialize(p, *q)
 	m.StartGame()
 }
