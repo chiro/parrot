@@ -15,6 +15,10 @@ type MonteCarloPlayer struct {
 	tryCount int
 }
 
+func calcScore(sim Simulator) float64 {
+	return float64(sim.Score() + sim.GetMaxTile() * 0)
+}
+
 func (p *MonteCarloPlayer) SetState(s GameState) {
 	p.State = s
 	p.tryCount = 100
@@ -30,7 +34,7 @@ func (p *MonteCarloPlayer) Playout(firstHand Hand, res chan PlayoutResult) {
 
 		for sim.Move(intToHand(rand.Intn(4))) {
 		}
-		avg += float64(sim.Score() + sim.GetAvailableCells()*10)
+		avg += calcScore(sim)
 	}
 	res <- PlayoutResult{ avg / float64(p.tryCount), firstHand }
 }

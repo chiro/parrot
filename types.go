@@ -29,6 +29,7 @@ type GameState struct {
 type Simulator interface {
 	Move(Hand) bool
 	GetAvailableCells() int
+	GetMaxTile() int
 	Score() int
 }
 

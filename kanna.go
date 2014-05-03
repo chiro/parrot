@@ -17,6 +17,18 @@ func (s *Kanna) Score() int {
 	return s.score
 }
 
+func (s *Kanna) GetMaxTile() (ret int) {
+	ret = 0
+	for y := 0; y < 4; y++ {
+		for x := 0; x < 4; x++ {
+			if ret < s.Grid[y][x] {
+				ret = s.Grid[y][x]
+			}
+		}
+	}
+	return
+}
+
 func (s *Kanna) Move(h Hand) bool {
 	if s.gameover {
 		return false
@@ -164,7 +176,7 @@ func (s *Kanna) getRandomAvailableCell() (x, y int) {
 		return -1, -1
 	}
 
-	var sel = rand.Int() % cnt
+	var sel = rand.Intn(cnt)
 	for y, row := range s.Grid {
 		for x, v := range row {
 			if v == 0 {
