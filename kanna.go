@@ -7,13 +7,13 @@ import (
 
 var freezed [4][4]bool
 
-type Simulator struct {
+type Kanna struct {
 	Grid   [4][4]int
 	Score  int
 	Finish bool
 }
 
-func (s *Simulator) move(h Hand) bool {
+func (s *Kanna) move(h Hand) bool {
 	if s.Finish {
 		return false
 	}
@@ -43,7 +43,7 @@ func (s *Simulator) move(h Hand) bool {
 	return true
 }
 
-func (s *Simulator) moveUp() {
+func (s *Kanna) moveUp() {
 	for y, row := range s.Grid {
 		if y == 0 {
 			continue
@@ -82,7 +82,7 @@ func (s *Simulator) moveUp() {
 	}
 }
 
-func (s *Simulator) rotateRight() {
+func (s *Kanna) rotateRight() {
 	var tmp [4][4]int
 	for y := 0; y < 4; y++ {
 		for x := 0; x < 4; x++ {
@@ -96,7 +96,7 @@ func (s *Simulator) rotateRight() {
 	}
 }
 
-func (s *Simulator) rotateLeft() {
+func (s *Kanna) rotateLeft() {
 	var tmp [4][4]int
 	for y := 0; y < 4; y++ {
 		for x := 0; x < 4; x++ {
@@ -110,13 +110,13 @@ func (s *Simulator) rotateLeft() {
 	}
 }
 
-func (s *Simulator) moveRight() {
+func (s *Kanna) moveRight() {
 	s.rotateLeft()
 	s.moveUp()
 	s.rotateRight()
 }
 
-func (s *Simulator) moveDown() {
+func (s *Kanna) moveDown() {
 	s.rotateLeft()
 	s.rotateLeft()
 	s.moveUp()
@@ -124,13 +124,13 @@ func (s *Simulator) moveDown() {
 	s.rotateRight()
 }
 
-func (s *Simulator) moveLeft() {
+func (s *Kanna) moveLeft() {
 	s.rotateRight()
 	s.moveUp()
 	s.rotateLeft()
 }
 
-func (s *Simulator) getAvailableCells() (cnt int) {
+func (s *Kanna) getAvailableCells() (cnt int) {
 	cnt = 0
 	for y := 0; y < 4; y++ {
 		for x := 0; x < 4; x++ {
@@ -142,7 +142,7 @@ func (s *Simulator) getAvailableCells() (cnt int) {
 	return
 }
 
-func (s *Simulator) getRandomAvailableCell() (x, y int) {
+func (s *Kanna) getRandomAvailableCell() (x, y int) {
 	cnt := s.getAvailableCells()
 	if cnt == 0 {
 		return -1, -1
