@@ -8,13 +8,17 @@ import (
 var freezed [4][4]bool
 
 type Kanna struct {
-	Grid   [4][4]int
-	Score  int
-	Finish bool
+	Grid     [4][4]int
+	score    int
+	gameover bool
 }
 
-func (s *Kanna) move(h Hand) bool {
-	if s.Finish {
+func (s *Kanna) Score() int {
+	return s.score
+}
+
+func (s *Kanna) Move(h Hand) bool {
+	if s.gameover {
 		return false
 	}
 
@@ -24,18 +28,19 @@ func (s *Kanna) move(h Hand) bool {
 		}
 	}
 
+	var moved bool
 	switch h {
 	case Up:
-		s.moveUp()
+		moved = s.moveUp()
 	case Right:
-		s.moveRight()
+		moved = s.moveRight()
 	case Left:
-		s.moveLeft()
+		moved = s.moveLeft()
 	case Down:
-		s.moveDown()
+		moved = s.moveDown()
 	}
 	x, y := s.getRandomAvailableCell()
-	if x == -1 {
+	if x == -1 || !moved {
 		return false
 	}
 
@@ -43,7 +48,8 @@ func (s *Kanna) move(h Hand) bool {
 	return true
 }
 
-func (s *Kanna) moveUp() {
+func (s *Kanna) moveUp() bool {
+	var moved bool = false
 	for y, row := range s.Grid {
 		if y == 0 {
 			continue
@@ -56,16 +62,18 @@ func (s *Kanna) moveUp() {
 				for yy := y - 1; yy >= 0; yy-- {
 					if s.Grid[yy][x] == 0 {
 						continue
+						moved = true
 					} else if freezed[yy][x] || s.Grid[yy][x] != s.Grid[y][x] {
 						// can't merge
 						tmp := s.Grid[y][x]
 						s.Grid[y][x] = 0
 						s.Grid[yy+1][x] = tmp
 						merged = true
+						moved = true
 						break
 					} else {
 						// merge
-						s.Score += s.Grid[y][x] * 2
+						s.score += s.Grid[y][x] * 2
 						s.Grid[yy][x] += s.Grid[y][x]
 						s.Grid[y][x] = 0
 						merged = true
@@ -74,12 +82,14 @@ func (s *Kanna) moveUp() {
 					}
 				}
 				if !merged {
+					moved = true
 					s.Grid[0][x] = s.Grid[y][x]
 					s.Grid[y][x] = 0
 				}
 			}
 		}
 	}
+	return moved
 }
 
 func (s *Kanna) rotateRight() {
@@ -110,27 +120,30 @@ func (s *Kanna) rotateLeft() {
 	}
 }
 
-func (s *Kanna) moveRight() {
+func (s *Kanna) moveRight() bool {
 	s.rotateLeft()
-	s.moveUp()
+	moved := s.moveUp()
 	s.rotateRight()
+	return moved
 }
 
-func (s *Kanna) moveDown() {
+func (s *Kanna) moveDown() bool {
 	s.rotateLeft()
 	s.rotateLeft()
-	s.moveUp()
+	moved := s.moveUp()
 	s.rotateRight()
 	s.rotateRight()
+	return moved
 }
 
-func (s *Kanna) moveLeft() {
+func (s *Kanna) moveLeft() bool {
 	s.rotateRight()
-	s.moveUp()
+	moved := s.moveUp()
 	s.rotateLeft()
+	return moved
 }
 
-func (s *Kanna) getAvailableCells() (cnt int) {
+func (s *Kanna) GetAvailableCells() (cnt int) {
 	cnt = 0
 	for y := 0; y < 4; y++ {
 		for x := 0; x < 4; x++ {
@@ -143,7 +156,7 @@ func (s *Kanna) getAvailableCells() (cnt int) {
 }
 
 func (s *Kanna) getRandomAvailableCell() (x, y int) {
-	cnt := s.getAvailableCells()
+	cnt := s.GetAvailableCells()
 	if cnt == 0 {
 		return -1, -1
 	}

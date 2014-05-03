@@ -97,3 +97,11 @@ func (s *GameState) showState() {
 	}
 	fmt.Printf("points = %d, score = %d\n", s.Points, s.Score)
 }
+
+func Max(x, y int) int {
+	if x < y {
+		return y
+	} else {
+		return x
+	}
+}

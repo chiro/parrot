@@ -45,6 +45,8 @@ func (m *Manager) StartGame() {
 		}
 	}
 
-	fmt.Println("----------  Finish  ----------")
-	m.state.showState()
+	if !m.Quiet {
+		fmt.Println("----------  Finish  ----------")
+		m.state.showState()
+	}
 }

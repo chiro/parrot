@@ -12,27 +12,26 @@ type MonteCarloPlayer struct {
 
 func (p *MonteCarloPlayer) SetState(s GameState) {
 	p.State = s
-	p.tryCount = 30
+	p.tryCount = 100
 }
 
 func (p *MonteCarloPlayer) Playout(firstHand Hand) float64 {
 	avg := 0.0
 	for cnt := 0; cnt < p.tryCount; cnt++ {
-		var sim Simulator = Simulator{p.State.Grid, 0, p.State.Over}
-		sim.move(firstHand)
-
-		pcnt := 0
-		for !sim.Finish && pcnt < 1000 {
-			sim.move(intToHand(rand.Int() % 4))
-			pcnt++
+		var sim Simulator = &Kanna{p.State.Grid, 0, p.State.Over}
+		if !sim.Move(firstHand) {
+			break
 		}
-		avg += float64(sim.Score + sim.getAvailableCells()*100)
+		avg += 1.0
+
+		for sim.Move(intToHand(rand.Int() % 4)) {
+		}
+		avg += float64(sim.Score()*10 + sim.GetAvailableCells()*100)
 	}
 	return avg / float64(p.tryCount)
 }
 
 func (p *MonteCarloPlayer) NextHand() Hand {
-
 	us := p.Playout(Up)
 	rs := p.Playout(Right)
 	ds := p.Playout(Down)

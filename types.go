@@ -25,3 +25,19 @@ type GameState struct {
 	Zen        string
 	Session_id string
 }
+
+type Simulator interface {
+	Move(Hand) bool
+	GetAvailableCells() int
+	Score() int
+}
+
+func (s *GameState) MaxTile() (ret int) {
+	ret = 0
+	for y := 0; y < 4; y++ {
+		for x := 0; x < 4; x++ {
+			ret = Max(ret, s.Grid[y][x])
+		}
+	}
+	return
+}
