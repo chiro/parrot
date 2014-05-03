@@ -2,11 +2,11 @@ package main
 
 import (
 	"math/rand"
-//	"fmt"
+	//	"fmt"
 )
 
 type MonteCarloPlayer struct {
-	State GameState
+	State    GameState
 	tryCount int
 }
 
@@ -18,7 +18,7 @@ func (p *MonteCarloPlayer) SetState(s GameState) {
 func (p *MonteCarloPlayer) Playout(firstHand Hand) float64 {
 	avg := 0.0
 	for cnt := 0; cnt < p.tryCount; cnt++ {
-		var sim Simulator = Simulator{ p.State.Grid, 0, p.State.Over}
+		var sim Simulator = Simulator{p.State.Grid, 0, p.State.Over}
 		sim.move(firstHand)
 
 		pcnt := 0
@@ -26,7 +26,7 @@ func (p *MonteCarloPlayer) Playout(firstHand Hand) float64 {
 			sim.move(intToHand(rand.Int() % 4))
 			pcnt++
 		}
-		avg += float64(sim.Score + sim.getAvailableCells() * 100)
+		avg += float64(sim.Score + sim.getAvailableCells()*100)
 	}
 	return avg / float64(p.tryCount)
 }

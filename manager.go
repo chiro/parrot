@@ -3,14 +3,14 @@ package main
 import "fmt"
 
 type Manager struct {
-	player Player
+	player    Player
 	sessionId string
-	state GameState
-	Quiet bool
+	state     GameState
+	Quiet     bool
 }
 
 func (m *Manager) Initialize(p Player, q bool) {
-	sid , _ := createGame()
+	sid, _ := createGame()
 	m.sessionId = sid
 	newState, err := getState(m.sessionId)
 	if err != nil {

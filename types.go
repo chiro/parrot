@@ -1,12 +1,13 @@
 package main
 
 type Hand int
+
 const (
 	Up Hand = iota
 	Right
 	Down
 	Left
-    Quit
+	Quit
 )
 
 type Player interface {
@@ -15,12 +16,12 @@ type Player interface {
 }
 
 type GameState struct {
-	Grid [4][4]int
-	Won bool
-	Moved bool
-	Over bool
-	Score int
-	Points int
-	Zen string
+	Grid       [4][4]int
+	Won        bool
+	Moved      bool
+	Over       bool
+	Score      int
+	Points     int
+	Zen        string
 	Session_id string
 }

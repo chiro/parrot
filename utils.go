@@ -1,11 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
-	"io/ioutil"
-	"encoding/json"
 )
 
 // Creates a new game and returns a session-id.
@@ -16,7 +16,7 @@ func createGame() (string, error) {
 	}
 	url := resp.Request.URL.String()
 	slice := strings.Split(url, "/")
-	return slice[len(slice) - 2], nil
+	return slice[len(slice)-2], nil
 }
 
 func getState(sessionId string) (GameState, error) {

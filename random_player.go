@@ -10,7 +10,7 @@ func (p *RandomPlayer) SetState(s GameState) {
 	p.State = s
 }
 
-func (p * RandomPlayer) NextHand() Hand {
-	var h int = rand.Int() % 4;
+func (p *RandomPlayer) NextHand() Hand {
+	var h int = rand.Int() % 4
 	return intToHand(h)
 }
