@@ -5,6 +5,11 @@ import (
 	//	"fmt"
 )
 
+type PlayoutResult struct {
+	score float64
+	hand Hand
+}
+
 type MonteCarloPlayer struct {
 	State    GameState
 	tryCount int
@@ -15,41 +20,36 @@ func (p *MonteCarloPlayer) SetState(s GameState) {
 	p.tryCount = 100
 }
 
-func (p *MonteCarloPlayer) Playout(firstHand Hand) float64 {
+func (p *MonteCarloPlayer) Playout(firstHand Hand, res chan PlayoutResult) {
 	avg := 0.0
 	for cnt := 0; cnt < p.tryCount; cnt++ {
 		var sim Simulator = &Kanna{p.State.Grid, 0, p.State.Over}
 		if !sim.Move(firstHand) {
 			break
 		}
-		avg += 1.0
 
-		for sim.Move(intToHand(rand.Int() % 4)) {
+		for sim.Move(intToHand(rand.Intn(4))) {
 		}
-		avg += float64(sim.Score()*10 + sim.GetAvailableCells()*100)
+		avg += float64(sim.Score() + sim.GetAvailableCells()*10)
 	}
-	return avg / float64(p.tryCount)
+	res <- PlayoutResult{ avg / float64(p.tryCount), firstHand }
 }
 
 func (p *MonteCarloPlayer) NextHand() Hand {
-	us := p.Playout(Up)
-	rs := p.Playout(Right)
-	ds := p.Playout(Down)
-	ls := p.Playout(Left)
+	res := make(chan PlayoutResult)
+	go p.Playout(Up, res)
+	go p.Playout(Right, res)
+	go p.Playout(Down, res)
+	go p.Playout(Left, res)
 
-	ret := 0
-	if rs > us {
-		ret = 1
-		us = rs
-	}
-	if ds > us {
-		ret = 2
-		us = ds
-	}
-	if ls > us {
-		ret = 3
-		us = ls
+	bestAvg, ret := 0.0, Up
+	for i := 0; i < 4; i++ {
+		r := <-res
+		if bestAvg < r.score {
+			bestAvg = r.score
+			ret = r.hand
+		}
 	}
 
-	return intToHand(ret)
+	return ret
 }

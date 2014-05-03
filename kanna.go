@@ -28,7 +28,7 @@ func (s *Kanna) Move(h Hand) bool {
 		}
 	}
 
-	var moved bool
+	var moved bool = false
 	switch h {
 	case Up:
 		moved = s.moveUp()
@@ -44,7 +44,7 @@ func (s *Kanna) Move(h Hand) bool {
 		return false
 	}
 
-	s.Grid[y][x] = ((rand.Int() % 2) + 1) * 2
+	s.Grid[y][x] = GetNextTile()
 	return true
 }
 
@@ -61,15 +61,17 @@ func (s *Kanna) moveUp() bool {
 				// Search the next tile
 				for yy := y - 1; yy >= 0; yy-- {
 					if s.Grid[yy][x] == 0 {
-						continue
 						moved = true
+						continue
 					} else if freezed[yy][x] || s.Grid[yy][x] != s.Grid[y][x] {
 						// can't merge
 						tmp := s.Grid[y][x]
 						s.Grid[y][x] = 0
 						s.Grid[yy+1][x] = tmp
 						merged = true
-						moved = true
+						if yy+1 != y {
+							moved = true
+						}
 						break
 					} else {
 						// merge
@@ -78,6 +80,7 @@ func (s *Kanna) moveUp() bool {
 						s.Grid[y][x] = 0
 						merged = true
 						freezed[yy][x] = true
+						moved = true
 						break
 					}
 				}
