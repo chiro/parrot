@@ -16,7 +16,7 @@ type MonteCarloPlayer struct {
 }
 
 func calcScore(sim Simulator) float64 {
-	return float64(sim.Score() + sim.GetMaxTile() * 0)
+	return float64(sim.Score() + sim.GetMaxTile() * 200)
 }
 
 func (p *MonteCarloPlayer) SetState(s GameState) {

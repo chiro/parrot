@@ -10,7 +10,7 @@ import (
 
 // Creates a new game and returns a session-id.
 func createGame() (string, error) {
-	resp, err := http.Get(BASE_URL + "start/json")
+	resp, err := http.Get(BASE_URL + "start/size/4/tiles/2/victory/31/rand/2/json")
 	if err != nil {
 		return "", err
 	}
