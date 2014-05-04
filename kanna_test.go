@@ -7,7 +7,7 @@ import (
 func TestMoveUp(t *testing.T) {
 	var initial [4][4]int = [4][4]int{{0, 2, 0, 2}, {2, 2, 0, 0}, {0, 2, 0, 0}, {0, 0, 0, 0}}
 	var sim Kanna = Kanna{initial, 0, false}
-	sim.move(Up)
+	sim.Move(Up)
 
 	var expected [4][4]int = [4][4]int{{2, 4, 0, 2}, {0, 2, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
 	if sim.Grid != expected {
