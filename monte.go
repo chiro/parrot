@@ -7,7 +7,7 @@ import (
 
 type PlayoutResult struct {
 	score float64
-	hand Hand
+	hand  Hand
 }
 
 type MonteCarloPlayer struct {
@@ -16,7 +16,7 @@ type MonteCarloPlayer struct {
 }
 
 func calcScore(sim Simulator) float64 {
-	return float64(sim.Score() + sim.GetMaxTile() * 200)
+	return float64(sim.Score() + sim.GetMaxTile()*200)
 }
 
 func (p *MonteCarloPlayer) SetState(s GameState) {
@@ -36,7 +36,7 @@ func (p *MonteCarloPlayer) Playout(firstHand Hand, res chan PlayoutResult) {
 		}
 		avg += calcScore(sim)
 	}
-	res <- PlayoutResult{ avg / float64(p.tryCount), firstHand }
+	res <- PlayoutResult{avg / float64(p.tryCount), firstHand}
 }
 
 func (p *MonteCarloPlayer) NextHand() Hand {
