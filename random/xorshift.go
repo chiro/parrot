@@ -2,11 +2,13 @@ package random
 
 import (
 	"math/rand"
+	"sync"
 )
 
 type Xorshift struct {
 	r               []int
 	x, y, z, w, len uint32
+	generating      sync.Mutex
 }
 
 func (x *Xorshift) SetRange(i []int) {
@@ -16,15 +18,18 @@ func (x *Xorshift) SetRange(i []int) {
 	for j := 0; j < rand.Intn(50)+50; j++ {
 		x.GenNext()
 	}
+	x.generating = sync.Mutex{}
 }
 
-func (x *Xorshift) GenNext() uint32 {
+func (x *Xorshift) GenNext() {
+	x.generating.Lock()
 	var t uint32 = x.x ^ (x.x << 11)
 	x.x, x.y, x.z = x.y, x.z, x.w
 	x.w = (x.w ^ (x.w >> 19)) ^ (t ^ (t >> 8))
-	return x.w
+	x.generating.Unlock()
 }
 
 func (x *Xorshift) GetRandom() int {
-	return x.r[x.GenNext()%x.len]
+	x.GenNext()
+	return x.r[x.w%x.len]
 }

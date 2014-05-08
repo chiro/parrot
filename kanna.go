@@ -15,7 +15,7 @@ type Kanna struct {
 }
 
 func (s *Kanna) Initialize() {
-	s.rand.SetRange([]int{2, 4})
+	s.rand.SetRange([]int{2, 2, 2, 2, 2, 2, 2, 2, 2, 4})
 }
 
 func (s *Kanna) Score() int {
