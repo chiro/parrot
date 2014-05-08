@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/chiro/parrot/random"
 	"math/rand"
-	//	"fmt"
 )
 
 type PlayoutResult struct {
@@ -24,10 +24,11 @@ func (p *MonteCarloPlayer) SetState(s GameState) {
 	p.tryCount = 100
 }
 
-func (p *MonteCarloPlayer) Playout(firstHand Hand, res chan PlayoutResult) {
+func (p *MonteCarloPlayer) Playout(firstHand Hand, res chan PlayoutResult, r random.Gen) {
 	avg := 0.0
 	for cnt := 0; cnt < p.tryCount; cnt++ {
-		var sim Simulator = &Kanna{p.State.Grid, 0, p.State.Over}
+		var sim Simulator = &Kanna{p.State.Grid, 0, p.State.Over, r}
+		sim.Initialize()
 		if !sim.Move(firstHand) {
 			break
 		}
@@ -39,12 +40,12 @@ func (p *MonteCarloPlayer) Playout(firstHand Hand, res chan PlayoutResult) {
 	res <- PlayoutResult{avg / float64(p.tryCount), firstHand}
 }
 
-func (p *MonteCarloPlayer) NextHand() Hand {
+func (p *MonteCarloPlayer) NextHand(r random.Gen) Hand {
 	res := make(chan PlayoutResult)
-	go p.Playout(Up, res)
-	go p.Playout(Right, res)
-	go p.Playout(Down, res)
-	go p.Playout(Left, res)
+	go p.Playout(Up, res, r)
+	go p.Playout(Right, res, r)
+	go p.Playout(Down, res, r)
+	go p.Playout(Left, res, r)
 
 	bestAvg, ret := 0.0, Up
 	for i := 0; i < 4; i++ {

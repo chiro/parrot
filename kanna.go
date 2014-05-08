@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/chiro/parrot/random"
 	"math/rand"
-	//	"fmt"
 )
 
 var freezed [4][4]bool
@@ -11,6 +11,11 @@ type Kanna struct {
 	Grid     [4][4]int
 	score    int
 	gameover bool
+	rand     random.Gen
+}
+
+func (s *Kanna) Initialize() {
+	s.rand.SetRange([]int{2, 4})
 }
 
 func (s *Kanna) Score() int {
@@ -56,7 +61,7 @@ func (s *Kanna) Move(h Hand) bool {
 		return false
 	}
 
-	s.Grid[y][x] = GetNextTile()
+	s.Grid[y][x] = s.rand.GetRandom()
 	return true
 }
 

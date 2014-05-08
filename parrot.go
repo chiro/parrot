@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/chiro/parrot/random"
 	"sort"
 )
 
@@ -16,8 +17,9 @@ func playOnce(q bool, done chan GameState) {
 	// Please change the next line to change AI.
 	// var p Player = new(RandomPlayer)
 	var p Player = new(MonteCarloPlayer)
+	var r random.Gen = new(random.Std)
 	m.Initialize(p, q)
-	m.StartGame()
+	m.StartGame(r)
 	done <- m.state
 }
 

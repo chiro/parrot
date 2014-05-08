@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/chiro/parrot/random"
+)
+
 type Hand int
 
 const (
@@ -11,7 +15,7 @@ const (
 )
 
 type Player interface {
-	NextHand() Hand
+	NextHand(random.Gen) Hand
 	SetState(GameState)
 }
 
@@ -27,6 +31,7 @@ type GameState struct {
 }
 
 type Simulator interface {
+	Initialize()
 	Move(Hand) bool
 	GetAvailableCells() int
 	GetMaxTile() int

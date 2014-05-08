@@ -1,6 +1,7 @@
 package main
 
 import "fmt"
+import "github.com/chiro/parrot/random"
 
 type Manager struct {
 	player    Player
@@ -21,10 +22,10 @@ func (m *Manager) Initialize(p Player, q bool) {
 	m.Quiet = q
 }
 
-func (m *Manager) StartGame() {
+func (m *Manager) StartGame(r random.Gen) {
 	for true {
 		m.player.SetState(m.state)
-		nextHand := m.player.NextHand()
+		nextHand := m.player.NextHand(r)
 		if nextHand == Quit {
 			break
 		}
