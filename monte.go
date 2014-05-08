@@ -27,13 +27,19 @@ func (p *MonteCarloPlayer) SetState(s GameState) {
 func (p *MonteCarloPlayer) Playout(firstHand Hand, res chan PlayoutResult, r random.Gen) {
 	avg := 0.0
 	for cnt := 0; cnt < p.tryCount; cnt++ {
-		var sim Simulator = &Kanna{p.State.Grid, 0, p.State.Over, r}
+		//var sim Simulator = &Kanna{p.State.Grid, p.State.Score, p.State.Over, r}
+		var sim Simulator = &Midori{encode2(&p.State.Grid), p.State.Score, p.State.Over, r}
 		sim.Initialize()
 		if !sim.Move(firstHand) {
+			avg -= 100
 			break
 		}
+		sim.AddRandomCell()
 
 		for sim.Move(intToHand(rand.Intn(4))) {
+			if !sim.AddRandomCell() {
+				break
+			}
 		}
 		avg += calcScore(sim)
 	}
@@ -55,6 +61,11 @@ func (p *MonteCarloPlayer) NextHand(r random.Gen) Hand {
 			ret = r.hand
 		}
 	}
+
+	// fmt.Printf("after best move %v:\n", ret)
+	// var sim Midori = Midori{encode2(&p.State.Grid), 0, p.State.Over, r}
+	// sim.Move(ret)
+	// fmt.Printf("%v\n", sim.GetState())
 
 	return ret
 }

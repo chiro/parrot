@@ -33,6 +33,7 @@ type GameState struct {
 type Simulator interface {
 	Initialize()
 	Move(Hand) bool
+	AddRandomCell() bool
 	GetAvailableCells() int
 	GetMaxTile() int
 	Score() int

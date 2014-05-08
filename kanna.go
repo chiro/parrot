@@ -34,6 +34,15 @@ func (s *Kanna) GetMaxTile() (ret int) {
 	return
 }
 
+func (s *Kanna) AddRandomCell() bool {
+	x, y := s.getRandomAvailableCell()
+	if x == -1 {
+		return false
+	}
+	s.Grid[y][x] = s.rand.GetRandom()
+	return true
+}
+
 func (s *Kanna) Move(h Hand) bool {
 	if s.gameover {
 		return false
@@ -45,24 +54,17 @@ func (s *Kanna) Move(h Hand) bool {
 		}
 	}
 
-	var moved bool = false
 	switch h {
 	case Up:
-		moved = s.moveUp()
+		return s.moveUp()
 	case Right:
-		moved = s.moveRight()
+		return s.moveRight()
 	case Left:
-		moved = s.moveLeft()
+		return s.moveLeft()
 	case Down:
-		moved = s.moveDown()
+		return s.moveDown()
 	}
-	x, y := s.getRandomAvailableCell()
-	if x == -1 || !moved {
-		return false
-	}
-
-	s.Grid[y][x] = s.rand.GetRandom()
-	return true
+	return false
 }
 
 func (s *Kanna) moveUp() bool {

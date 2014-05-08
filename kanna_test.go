@@ -8,6 +8,7 @@ import (
 func TestMoveUp(t *testing.T) {
 	var initial [4][4]int = [4][4]int{{0, 2, 0, 2}, {2, 2, 0, 0}, {0, 2, 0, 0}, {0, 0, 0, 0}}
 	var r random.Gen = &random.Std{}
+	r.SetRange([]int{2, 4})
 	var sim Kanna = Kanna{initial, 0, false, r}
 	sim.Move(Up)
 
@@ -20,6 +21,7 @@ func TestMoveUp(t *testing.T) {
 func TestRotateRight(t *testing.T) {
 	var initial [4][4]int = [4][4]int{{0, 1, 2, 3}, {4, 5, 6, 7}, {8, 9, 10, 11}, {12, 13, 14, 15}}
 	var r random.Gen = &random.Std{}
+	r.SetRange([]int{2, 4})
 	var sim Kanna = Kanna{initial, 0, false, r}
 	sim.rotateRight()
 
@@ -32,6 +34,7 @@ func TestRotateRight(t *testing.T) {
 func TestRotateLeft(t *testing.T) {
 	var initial [4][4]int = [4][4]int{{0, 1, 2, 3}, {4, 5, 6, 7}, {8, 9, 10, 11}, {12, 13, 14, 15}}
 	var r random.Gen = &random.Std{}
+	r.SetRange([]int{2, 4})
 	var sim Kanna = Kanna{initial, 0, false, r}
 	sim.rotateLeft()
 
