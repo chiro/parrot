@@ -16,3 +16,9 @@ func (s *Std) GetRandom() int {
 	i := rand.Intn(s.len)
 	return s.r[i]
 }
+
+func (s *Std) GetGenerator() func() uint32 {
+	return func() uint32 {
+		return uint32(rand.Int())
+	}
+}
