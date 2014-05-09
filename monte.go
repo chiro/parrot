@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/chiro/parrot/random"
-	"math/rand"
 )
 
 type PlayoutResult struct {
@@ -21,11 +20,12 @@ func calcScore(sim Simulator) float64 {
 
 func (p *MonteCarloPlayer) SetState(s GameState) {
 	p.State = s
-	p.tryCount = 100
+	p.tryCount = 500
 }
 
 func (p *MonteCarloPlayer) Playout(firstHand Hand, res chan PlayoutResult, r random.Gen) {
 	avg := 0.0
+	gen := r.GetGenerator()
 	for cnt := 0; cnt < p.tryCount; cnt++ {
 		//var sim Simulator = &Kanna{p.State.Grid, p.State.Score, p.State.Over, r}
 		var sim Simulator = &Midori{encode2(&p.State.Grid), p.State.Score, p.State.Over, r}
@@ -36,7 +36,7 @@ func (p *MonteCarloPlayer) Playout(firstHand Hand, res chan PlayoutResult, r ran
 		}
 		sim.AddRandomCell()
 
-		for sim.Move(intToHand(rand.Intn(4))) {
+		for sim.Move(intToHand(int(gen() % 4))) {
 			if !sim.AddRandomCell() {
 				break
 			}

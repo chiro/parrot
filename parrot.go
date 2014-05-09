@@ -17,7 +17,7 @@ func playOnce(q bool, done chan GameState) {
 	// Please change the next line to change AI.
 	// var p Player = new(RandomPlayer)
 	var p Player = new(MonteCarloPlayer)
-	var r random.Gen = new(random.Std)
+	var r random.Gen = new(random.Xorshift)
 	m.Initialize(p, q)
 	m.StartGame(r)
 	done <- m.state
