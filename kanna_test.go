@@ -5,6 +5,20 @@ import (
 	"testing"
 )
 
+func TestKannaAddRandomCell(t *testing.T) {
+	var initial [4][4]int = [4][4]int{{0, 2, 0, 2}, {2, 2, 0, 0}, {0, 2, 0, 0}, {0, 0, 0, 0}}
+	var r random.Gen = &random.Std{}
+	r.SetRange([]int{2, 4})
+	var sim Kanna = Kanna{initial, 0, false, r}
+
+	before := sim.GetAvailableCells()
+	sim.AddRandomCell()
+	after := sim.GetAvailableCells()
+	if before-1 != after {
+		t.Errorf("got %v, want %v\n", after, before-1)
+	}
+}
+
 func TestMoveUp(t *testing.T) {
 	var initial [4][4]int = [4][4]int{{0, 2, 0, 2}, {2, 2, 0, 0}, {0, 2, 0, 0}, {0, 0, 0, 0}}
 	var r random.Gen = &random.Std{}
