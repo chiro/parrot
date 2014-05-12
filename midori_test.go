@@ -9,7 +9,7 @@ func TestMidoriAddRandomCell(t *testing.T) {
 	var initial [4][4]int = [4][4]int{{0, 2, 0, 2}, {2, 2, 0, 0}, {0, 2, 0, 0}, {0, 0, 0, 0}}
 	var r random.Gen = &random.Std{}
 	r.SetRange([]int{2, 4})
-	var sim Midori = Midori{encode2(&initial), 0, false, r}
+	var sim Midori = Midori{encode2(&initial), 0, false, r.GetGenerator()}
 
 	before := sim.GetAvailableCells()
 	sim.AddRandomCell()
@@ -22,16 +22,16 @@ func TestMidoriAddRandomCell(t *testing.T) {
 func TestEncodeDecode(t *testing.T) {
 	var initial [4][4]int = [4][4]int{{0, 1, 0, 1}, {1, 1, 0, 0}, {0, 1, 0, 0}, {0, 0, 0, 0}}
 	var r random.Gen = &random.Std{}
-	var sim Midori = Midori{encode(&initial), 0, false, r}
-	if initial != sim.GetState() {
-		t.Errorf("got %v\nwant %v\n", sim.GetState(), initial)
+	var sim Midori = Midori{encode(&initial), 0, false, r.GetGenerator()}
+	if initial != sim.GetBoard() {
+		t.Errorf("got %v\nwant %v\n", sim.GetBoard(), initial)
 	}
 }
 
 func TestMidoriGet(t *testing.T) {
 	var initial [4][4]int = [4][4]int{{0, 1, 0, 1}, {1, 1, 0, 0}, {0, 1, 0, 0}, {0, 0, 0, 0}}
 	var r random.Gen = &random.Std{}
-	var sim Midori = Midori{encode(&initial), 0, false, r}
+	var sim Midori = Midori{encode(&initial), 0, false, r.GetGenerator()}
 
 	for y := 0; y < 4; y++ {
 		for x := 0; x < 4; x++ {
@@ -45,7 +45,7 @@ func TestMidoriGet(t *testing.T) {
 func TestMidoriSet(t *testing.T) {
 	var initial [4][4]int = [4][4]int{{0, 1, 0, 1}, {1, 1, 0, 0}, {0, 1, 0, 0}, {0, 0, 0, 0}}
 	var r random.Gen = &random.Std{}
-	var sim Midori = Midori{encode(&initial), 0, false, r}
+	var sim Midori = Midori{encode(&initial), 0, false, r.GetGenerator()}
 
 	sim.set(0, 0, 2)
 	if sim.get(0, 0) != 2 {
@@ -62,12 +62,12 @@ func TestMidoriMoveUp(t *testing.T) {
 	var initial [4][4]int = [4][4]int{{0, 1, 0, 1}, {1, 1, 0, 2}, {0, 1, 0, 3}, {0, 0, 0, 4}}
 	var r random.Gen = &random.Std{}
 	r.SetRange([]int{2, 4})
-	var sim Midori = Midori{encode(&initial), 0, false, r}
+	var sim Midori = Midori{encode(&initial), 0, false, r.GetGenerator()}
 	sim.Move(Up)
 
 	var expected [4][4]int = [4][4]int{{1, 2, 0, 1}, {0, 1, 0, 2}, {0, 0, 0, 3}, {0, 0, 0, 4}}
 	if sim.Grid != encode(&expected) {
-		t.Errorf("got %v\n", sim.GetState())
+		t.Errorf("got %v\n", sim.GetBoard())
 		t.Errorf("got %v\nwant %v", sim.Grid, encode(&expected))
 	}
 }
@@ -76,12 +76,12 @@ func TestMidoriMoveRight(t *testing.T) {
 	var initial [4][4]int = [4][4]int{{1, 1, 4, 5}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
 	var r random.Gen = &random.Std{}
 	r.SetRange([]int{2, 4})
-	var sim Midori = Midori{encode(&initial), 0, false, r}
+	var sim Midori = Midori{encode(&initial), 0, false, r.GetGenerator()}
 	sim.Move(Right)
 
 	var expected [4][4]int = [4][4]int{{0, 2, 4, 5}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
 	if sim.Grid != encode(&expected) {
-		t.Errorf("got %v\n", sim.GetState())
+		t.Errorf("got %v\n", sim.GetBoard())
 		t.Errorf("got %v\nwant %v", sim.Grid, encode(&expected))
 	}
 }
@@ -90,7 +90,7 @@ func TestMidoriGetAvailableCells(t *testing.T) {
 	var initial [4][4]int = [4][4]int{{0, 1, 0, 1}, {1, 1, 0, 0}, {0, 1, 0, 0}, {0, 0, 0, 0}}
 	var r random.Gen = &random.Std{}
 	r.SetRange([]int{2, 4})
-	var sim Midori = Midori{encode(&initial), 0, false, r}
+	var sim Midori = Midori{encode(&initial), 0, false, r.GetGenerator()}
 
 	if sim.GetAvailableCells() != 11 {
 		t.Errorf("got %v, want %v\n", sim.GetAvailableCells(), 11)
@@ -106,7 +106,7 @@ func TestMidoriGetMaxCell(t *testing.T) {
 	var initial [4][4]int = [4][4]int{{0, 1, 0, 1}, {1, 1, 0, 0}, {0, 1, 0, 0}, {0, 0, 3, 0}}
 	var r random.Gen = &random.Std{}
 	r.SetRange([]int{2, 4})
-	var sim Midori = Midori{encode(&initial), 0, false, r}
+	var sim Midori = Midori{encode(&initial), 0, false, r.GetGenerator()}
 
 	if sim.GetMaxTile() != 8 {
 		t.Errorf("got %v, want %v\n", sim.GetMaxTile(), 8)

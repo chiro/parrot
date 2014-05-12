@@ -23,6 +23,8 @@ func playOnce(q bool, done chan GameState, ai string) {
 		p = &OptMonte{GameState{}, 100}
 	case "shiro":
 		p = &Shiro{GameState{}, 0.2, 50}
+	case "ritu":
+		p = &Ritu{GameState{}, 0.1, 50}
 	}
 	var r random.Gen = new(random.Xorshift)
 	m.Initialize(p, q)
@@ -69,6 +71,7 @@ func main() {
 	var q = flag.Bool("q", false, "Suppress outputs. Show only final state.")
 	var t = flag.Int("t", 1, "How many times we play the game.")
 	var ai = flag.String("a", "monte", "Whichi AI we use.")
+	var d = flag.Bool("d", false, "debug mode")
 	flag.Parse()
 
 	// Get the address of the server.
@@ -76,6 +79,9 @@ func main() {
 	if address != "" {
 		BaseURL = "http://" + address + "/hi/"
 	}
+
+	// Set the debug flag.
+	isDebug = *d
 
 	play(*q, *t, *ai)
 }
