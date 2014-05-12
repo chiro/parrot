@@ -11,7 +11,6 @@ type OptMonte struct {
 
 func (p *OptMonte) SetState(s GameState) {
 	p.State = s
-	p.timeLimit = 100
 }
 
 func (p *OptMonte) Playout(first Hand, res chan PlayoutResult, gen func() uint32, now time.Time) {

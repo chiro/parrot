@@ -11,23 +11,27 @@ import (
 // This variable means where the service is.
 var BaseURL string = "http://localhost:8080/hi/"
 
-func playOnce(q bool, done chan GameState) {
+func playOnce(q bool, done chan GameState, ai string) {
 	var m *Manager = new(Manager)
-	// Please change the next line to change AI.
-	// var p Player = new(RandomPlayer)
-	//var p Player = new(MonteCarloPlayer)
-	//var p Player = new(Shiro)
-	var p Player = new(OptMonte)
+	var p Player
+	switch ai {
+	case "random":
+		p = new(RandomPlayer)
+	case "monte":
+		p = &MonteCarloPlayer{GameState{}, 500} // try count == 500
+	case "optmonte":
+		p = &OptMonte{GameState{}, 100}
+	}
 	var r random.Gen = new(random.Xorshift)
 	m.Initialize(p, q)
 	m.StartGame(r)
 	done <- m.state
 }
 
-func play(q bool, t int) {
+func play(q bool, t int, ai string) {
 	done := make(chan GameState)
 	for i := 0; i < t; i++ {
-		go playOnce(q, done)
+		go playOnce(q, done, ai)
 	}
 
 	var maxTile map[int]int = map[int]int{}
@@ -62,6 +66,7 @@ func main() {
 	// Command-line options
 	var q = flag.Bool("q", false, "Suppress outputs. Show only final state.")
 	var t = flag.Int("t", 1, "How many times we play the game.")
+	var ai = flag.String("a", "monte", "Whichi AI we use.")
 	flag.Parse()
 
 	// Get the address of the server.
@@ -70,5 +75,5 @@ func main() {
 		BaseURL = "http://" + address + "/hi/"
 	}
 
-	play(*q, *t)
+	play(*q, *t, *ai)
 }

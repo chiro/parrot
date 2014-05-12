@@ -16,7 +16,6 @@ func calcScore(sim Simulator) float64 {
 
 func (p *MonteCarloPlayer) SetState(s GameState) {
 	p.State = s
-	p.tryCount = 500
 }
 
 func (p *MonteCarloPlayer) Playout(firstHand Hand, res chan PlayoutResult, gen func() uint32) {
