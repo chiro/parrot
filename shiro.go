@@ -2,43 +2,33 @@ package main
 
 import (
 	"math"
-	"math/rand"
+	"time"
 )
 
 // Monte-Calro method with UCB1
 type Shiro struct {
-	State GameState
-	alpha float64
-}
-
-func (s *Shiro) Playout(first Hand, gen func() uint32) int {
-	var sim Simulator = &Kanna{s.State.Grid, 0, s.State.Over, gen}
-	if !sim.Move(first) {
-		return 0
-	}
-	for sim.GetAvailableCells() > 0 {
-		var moved bool = sim.Move(intToHand(rand.Intn(4)))
-		if moved {
-			continue
-		}
-
-		var goNext bool = false
-		for hand := 0; hand < 4; hand++ {
-			moved = sim.Move(intToHand(int(gen() % 4)))
-			if moved {
-				goNext = true
-				break
-			}
-		}
-		if !goNext {
-			break
-		}
-	}
-	return sim.Score()
+	State     GameState
+	alpha     float64
+	timeLimit int
 }
 
 func (s *Shiro) SetState(state GameState) {
 	s.State = state
+}
+
+func (s *Shiro) Playout(first Hand, gen func() uint32) float64 {
+	var sim Simulator = &Kanna{s.State.Grid, s.State.Score, s.State.Over, gen}
+	if !sim.Move(first) {
+		return -100
+	}
+	sim.AddRandomCell()
+
+	for sim.Move(intToHand(int(gen() % 4))) {
+		if !sim.AddRandomCell() {
+			break
+		}
+	}
+	return calcScore(sim)
 }
 
 func choiceMax(x *[4]float64, n *[4]int, total int, alpha float64) (ret int) {
@@ -56,20 +46,28 @@ func choiceMax(x *[4]float64, n *[4]int, total int, alpha float64) (ret int) {
 }
 
 func (p *Shiro) NextHand(gen func() uint32) Hand {
-	INF := 100000000.0
-	x := [4]float64{INF, INF, INF, INF}
-	n := [4]int{1, 1, 1, 1}
+	x := [4]float64{0, 0, 0, 0}
+	n := [4]int{100, 100, 100, 100}
 
 	for i := 0; i < 4; i++ {
-		x[i] = float64(p.Playout(intToHand(i), gen))
+		for j := 0; j < 100; j++ {
+			x[i] += float64(p.Playout(intToHand(i), gen))
+		}
+		x[i] /= 100
 	}
 
-	for cnt := 0; cnt < 500; cnt++ {
+	playCnt := [4]int{100, 100, 100, 100}
+	cnt := 0
+	start := time.Now()
+	for time.Since(start) < time.Duration(p.timeLimit)*time.Millisecond {
+		cnt++
 		i := choiceMax(&x, &n, cnt, p.alpha)
+		playCnt[i]++
 		y := float64(p.Playout(intToHand(i), gen))
 		x[i] = (x[i]*float64(n[i]) + y) / float64(n[i]+1)
 		n[i]++
 	}
 
+	// fmt.Printf("play %d, %d, %d, %d\n", playCnt[0], playCnt[1], playCnt[2], playCnt[3])
 	return intToHand(choiceMax(&x, &n, 100, p.alpha))
 }

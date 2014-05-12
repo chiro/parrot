@@ -21,6 +21,8 @@ func playOnce(q bool, done chan GameState, ai string) {
 		p = &MonteCarloPlayer{GameState{}, 500} // try count == 500
 	case "optmonte":
 		p = &OptMonte{GameState{}, 100}
+	case "shiro":
+		p = &Shiro{GameState{}, 0.2, 50}
 	}
 	var r random.Gen = new(random.Xorshift)
 	m.Initialize(p, q)
