@@ -10,7 +10,7 @@ import (
 
 // Creates a new game and returns a session-id.
 func createGame() (string, error) {
-	resp, err := http.Get(BASE_URL + "start/size/4/tiles/2/victory/31/rand/2/json")
+	resp, err := http.Get(BaseURL + "start/size/4/tiles/2/victory/31/rand/2/json")
 	if err != nil {
 		return "", err
 	}
@@ -20,7 +20,20 @@ func createGame() (string, error) {
 }
 
 func getState(sessionId string) (GameState, error) {
-	resp, err := http.Get(BASE_URL + "state/" + sessionId + "/json")
+	resp, err := http.Get(BaseURL + "state/" + sessionId + "/json")
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+	var state GameState
+	bytes, err := ioutil.ReadAll(resp.Body)
+	err = json.Unmarshal(bytes, &state)
+	return state, err
+}
+
+func sendHand(sessionId string, hand Hand) (GameState, error) {
+	url := BaseURL + "state/" + sessionId + "/move/" + handToString(hand) + "/json"
+	resp, err := http.Get(url)
 	if err != nil {
 		panic(err)
 	}
@@ -70,19 +83,6 @@ func intToHand(i int) Hand {
 	} else {
 		return Quit
 	}
-}
-
-func sendHand(sessionId string, hand Hand) (GameState, error) {
-	url := BASE_URL + "state/" + sessionId + "/move/" + handToString(hand) + "/json"
-	resp, err := http.Get(url)
-	if err != nil {
-		panic(err)
-	}
-	defer resp.Body.Close()
-	var state GameState
-	bytes, err := ioutil.ReadAll(resp.Body)
-	err = json.Unmarshal(bytes, &state)
-	return state, err
 }
 
 func (s *GameState) showState() {

@@ -4,20 +4,19 @@ import (
 	"flag"
 	"fmt"
 	"github.com/chiro/parrot/random"
+	"os"
 	"sort"
 )
 
 // This variable means where the service is.
-// const BASE_URL = "http://2048.semantics3.com/hi/"
-// const BASE_URL = "http://ring:2048/hi/"
-const BASE_URL = "http://localhost:8080/hi/"
+var BaseURL string = "http://localhost:8080/hi/"
 
 func playOnce(q bool, done chan GameState) {
 	var m *Manager = new(Manager)
 	// Please change the next line to change AI.
 	// var p Player = new(RandomPlayer)
-	//var p Player = new(MonteCarloPlayer)
-	var p Player = new(Shiro)
+	var p Player = new(MonteCarloPlayer)
+	//var p Player = new(Shiro)
 	var r random.Gen = new(random.Xorshift)
 	m.Initialize(p, q)
 	m.StartGame(r)
@@ -63,6 +62,12 @@ func main() {
 	var q = flag.Bool("q", false, "Suppress outputs. Show only final state.")
 	var t = flag.Int("t", 1, "How many times we play the game.")
 	flag.Parse()
+
+	// Get the address of the server.
+	address := os.Getenv("SERVER")
+	if address != "" {
+		BaseURL = "http://" + address + "/hi/"
+	}
 
 	play(*q, *t)
 }
