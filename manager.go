@@ -23,9 +23,10 @@ func (m *Manager) Initialize(p Player, q bool) {
 }
 
 func (m *Manager) StartGame(r random.Gen) {
+	gen := r.GetGenerator()
 	for true {
 		m.player.SetState(m.state)
-		nextHand := m.player.NextHand(r)
+		nextHand := m.player.NextHand(gen)
 		if nextHand == Quit {
 			break
 		}

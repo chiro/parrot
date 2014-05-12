@@ -31,7 +31,10 @@ func (x *Xorshift) GenNext() {
 
 func (x *Xorshift) GetRandom() int {
 	x.GenNext()
-	return x.r[x.w%x.len]
+	if x.w%10 == 0 {
+		return 4
+	}
+	return 2
 }
 
 func (p *Xorshift) GetGenerator() func() uint32 {

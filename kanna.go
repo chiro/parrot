@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/chiro/parrot/random"
 	"math/rand"
 )
 
@@ -11,11 +10,11 @@ type Kanna struct {
 	Grid     [4][4]int
 	score    int
 	gameover bool
-	rand     random.Gen
+	gen      func() uint32
 }
 
-func (s *Kanna) Initialize() {
-	s.rand.SetRange([]int{2, 2, 2, 2, 2, 2, 2, 2, 2, 4})
+func (s *Kanna) GetBoard() [4][4]int {
+	return s.Grid
 }
 
 func (s *Kanna) Score() int {
@@ -39,7 +38,11 @@ func (s *Kanna) AddRandomCell() bool {
 	if x == -1 {
 		return false
 	}
-	s.Grid[y][x] = s.rand.GetRandom()
+	if s.gen()%10 == 3 {
+		s.Grid[y][x] = 4
+	} else {
+		s.Grid[y][x] = 2
+	}
 	return true
 }
 

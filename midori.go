@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/chiro/parrot/random"
 	"math/rand"
 )
 
@@ -11,11 +10,7 @@ type Midori struct {
 	Grid     uint64
 	score    int
 	gameover bool
-	rand     random.Gen
-}
-
-func (s *Midori) Initialize() {
-	s.rand.SetRange([]int{1, 1, 1, 1, 1, 1, 1, 1, 1, 2})
+	gen      func() uint32
 }
 
 func (m *Midori) Score() int {
@@ -103,7 +98,11 @@ func (m *Midori) AddRandomCell() bool {
 	if x == -1 {
 		return false
 	}
-	m.set(x, y, m.rand.GetRandom())
+	if m.gen()%10 == 1 {
+		m.set(x, y, 2)
+	} else {
+		m.set(x, y, 1)
+	}
 	return true
 }
 
@@ -159,7 +158,7 @@ func encode(grid *[4][4]int) (ret uint64) {
 	return
 }
 
-func (m *Midori) GetState() [4][4]int {
+func (m *Midori) GetBoard() [4][4]int {
 	r := [4][4]int{}
 	for y := 0; y < 4; y++ {
 		for x := 0; x < 4; x++ {

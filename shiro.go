@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/chiro/parrot/random"
 	"math"
 	"math/rand"
 )
@@ -12,9 +11,8 @@ type Shiro struct {
 	alpha float64
 }
 
-func (s *Shiro) Playout(first Hand, r random.Gen) int {
-	gen := r.GetGenerator()
-	var sim Simulator = &Kanna{s.State.Grid, 0, s.State.Over, r}
+func (s *Shiro) Playout(first Hand, gen func() uint32) int {
+	var sim Simulator = &Kanna{s.State.Grid, 0, s.State.Over, gen}
 	if !sim.Move(first) {
 		return 0
 	}
@@ -57,18 +55,18 @@ func choiceMax(x *[4]float64, n *[4]int, total int, alpha float64) (ret int) {
 	return
 }
 
-func (p *Shiro) NextHand(r random.Gen) Hand {
+func (p *Shiro) NextHand(gen func() uint32) Hand {
 	INF := 100000000.0
 	x := [4]float64{INF, INF, INF, INF}
 	n := [4]int{1, 1, 1, 1}
 
 	for i := 0; i < 4; i++ {
-		x[i] = float64(p.Playout(intToHand(i), r))
+		x[i] = float64(p.Playout(intToHand(i), gen))
 	}
 
 	for cnt := 0; cnt < 500; cnt++ {
 		i := choiceMax(&x, &n, cnt, p.alpha)
-		y := float64(p.Playout(intToHand(i), r))
+		y := float64(p.Playout(intToHand(i), gen))
 		x[i] = (x[i]*float64(n[i]) + y) / float64(n[i]+1)
 		n[i]++
 	}
