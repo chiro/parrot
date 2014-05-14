@@ -70,7 +70,7 @@ func main() {
 	// Command-line options
 	var q = flag.Bool("q", false, "Suppress outputs. Show only final state.")
 	var t = flag.Int("t", 1, "How many times we play the game.")
-	var ai = flag.String("a", "monte", "Whichi AI we use.")
+	var ai = flag.String("a", "ritu", "Whichi AI we use.")
 	var d = flag.Bool("d", false, "debug mode")
 	flag.Parse()
 
