@@ -13,6 +13,47 @@ type Midori struct {
 	gen      func() uint32
 }
 
+var moveTable [4][65536]uint64
+var scoreTable [4][65536]int
+
+func (m *Midori) Initialize() {
+	moveTable = [4][65536]uint64{}
+	scoreTable = [4][65536]int{}
+	for y := 0; y < 65536; y++ {
+		//table := decodeRow(uint64(y))
+		var sim Kanna = Kanna{decodeRow(uint64(y)), 0, false, func() uint32 { return uint32(1) }}
+		sim.Move(Right)
+		moveTable[1][y] = encodeRow(sim.Grid)
+		moveTable[2][y] = encodeRow(sim.Grid)
+		scoreTable[1][y] = sim.score
+		scoreTable[2][y] = sim.score
+
+		sim.Grid = decodeRow(uint64(y))
+		sim.score = 0
+		sim.Move(Left)
+		moveTable[0][y] = encodeRow(sim.Grid)
+		moveTable[3][y] = encodeRow(sim.Grid)
+		scoreTable[0][y] = sim.score
+		scoreTable[3][y] = sim.score
+	}
+}
+
+func decodeRow(r uint64) [4][4]int {
+	row := [4][4]int{{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
+	for x := 0; x < 4; x++ {
+		row[0][x] = int((r >> uint(x*4)) & MASK)
+	}
+	return row
+}
+
+func encodeRow(table [4][4]int) uint64 {
+	var ret uint64 = 0
+	for x := 0; x < 4; x++ {
+		ret |= uint64((uint64(table[0][x]) & MASK) << uint64(x*4))
+	}
+	return ret
+}
+
 func (m *Midori) Score() int {
 	return m.score
 }
@@ -169,139 +210,70 @@ func (m *Midori) GetBoard() [4][4]int {
 }
 
 func (m *Midori) moveUp() bool {
-	moved := false
+	var nr uint64 = 0
 	for col := 0; col < 4; col++ {
-		p := 0
-		for i := 0; i < 4; i++ {
-			if m.get(col, i) == 0 || p == i {
-				continue
-			}
-
-			if m.get(col, p) == 0 {
-				// fmt.Printf("moved to empty cell! %d,%d -> %d,%d\n", col, i, col, p)
-				m.set(col, p, m.get(col, i))
-				m.set(col, i, 0)
-				p++
-				moved = true
-			} else if m.get(col, p) == m.get(col, i) {
-				// fmt.Printf("merge! %d,%d -> %d,%d\n", col, i, col, p)
-				m.score += 1 << uint(m.get(col, i)+1)
-				m.set(col, i, 0)
-				m.set(col, p, m.get(col, p)+1)
-				p++
-				moved = true
-			} else {
-				p++
-				// fmt.Printf("moved! %d,%d -> %d,%d\n", col, i, col, p)
-				m.set(col, p, m.get(col, i))
-				if p < i {
-					m.set(col, i, 0)
-					moved = true
-				}
-			}
+		var c uint64 = 0
+		for y := 0; y < 4; y++ {
+			c |= uint64(m.get(col, y) << uint(y*4))
+		}
+		d := moveTable[0][c]
+		m.score += scoreTable[0][c]
+		for y := 0; y < 4; y++ {
+			nr |= ((d >> uint(y*4)) & MASK) << uint(y*16+col*4)
 		}
 	}
+	moved := nr != m.Grid
+	m.Grid = nr
 	return moved
 }
 
 func (m *Midori) moveRight() bool {
-	moved := false
+	var nr uint64 = 0
 	for row := 0; row < 4; row++ {
-		p := 3
-		for i := 3; i >= 0; i-- {
-			if m.get(i, row) == 0 || p == i {
-				continue
-			}
-
-			if m.get(p, row) == 0 {
-				m.set(p, row, m.get(i, row))
-				m.set(i, row, 0)
-				p--
-				moved = true
-			} else if m.get(p, row) == m.get(i, row) {
-				m.score += 1 << uint(m.get(i, row)+1)
-				m.set(i, row, 0)
-				m.set(p, row, m.get(p, row)+1)
-				p--
-				moved = true
-			} else {
-				p--
-				m.set(p, row, m.get(i, row))
-				if p != i {
-					m.set(i, row, 0)
-					moved = true
-				}
-			}
+		var c uint64 = 0
+		for x := 0; x < 4; x++ {
+			c |= uint64(m.get(x, row) << uint(x*4))
 		}
+		d := moveTable[1][c]
+		m.score += scoreTable[1][c]
+		nr |= d << uint(row*16)
 	}
+	moved := nr != m.Grid
+	m.Grid = nr
 	return moved
 }
 
 func (m *Midori) moveDown() bool {
-	moved := false
+	var nr uint64 = 0
 	for col := 0; col < 4; col++ {
-		p := 3
-		for i := 3; i >= 0; i-- {
-			if m.get(col, i) == 0 || p == i {
-				continue
-			}
-
-			if m.get(col, p) == 0 {
-				// fmt.Printf("moved to empty cell! %d,%d -> %d,%d\n", col, i, col, p)
-				m.set(col, p, m.get(col, i))
-				m.set(col, i, 0)
-				p--
-				moved = true
-			} else if m.get(col, p) == m.get(col, i) {
-				// fmt.Printf("merge! %d,%d -> %d,%d\n", col, i, col, p)
-				m.score += 1 << uint(m.get(col, p)+1)
-				m.set(col, i, 0)
-				m.set(col, p, m.get(col, p)+1)
-				p--
-				moved = true
-			} else {
-				p--
-				// fmt.Printf("moved! %d,%d -> %d,%d\n", col, i, col, p)
-				m.set(col, p, m.get(col, i))
-				if p != i {
-					m.set(col, i, 0)
-					moved = true
-				}
-			}
+		var c uint64 = 0
+		for y := 0; y < 4; y++ {
+			c |= uint64(m.get(col, y) << uint(y*4))
 		}
+		d := moveTable[2][c]
+		m.score += scoreTable[2][c]
+		for y := 0; y < 4; y++ {
+			nr |= ((d >> uint(y*4)) & MASK) << uint(y*16+col*4)
+		}
+
 	}
+	moved := nr != m.Grid
+	m.Grid = nr
 	return moved
 }
 
 func (m *Midori) moveLeft() bool {
-	moved := false
+	var nr uint64 = 0
 	for row := 0; row < 4; row++ {
-		p := 0
-		for i := 0; i < 4; i++ {
-			if m.get(i, row) == 0 || p == i {
-				continue
-			}
-
-			if m.get(p, row) == 0 {
-				m.set(p, row, m.get(i, row))
-				m.set(i, row, 0)
-				p++
-				moved = true
-			} else if m.get(p, row) == m.get(i, row) {
-				m.score += 1 << uint(m.get(i, row)+1)
-				m.set(i, row, 0)
-				m.set(p, row, m.get(p, row)+1)
-				p++
-				moved = true
-			} else {
-				p++
-				m.set(p, row, m.get(i, row))
-				if p != i {
-					moved = true
-					m.set(i, row, 0)
-				}
-			}
+		var c uint64 = 0
+		for x := 0; x < 4; x++ {
+			c |= uint64(m.get(x, row) << uint(x*4))
 		}
+		d := moveTable[3][c]
+		m.score += scoreTable[3][c]
+		nr |= d << uint(row*16)
 	}
+	moved := nr != m.Grid
+	m.Grid = nr
 	return moved
 }
