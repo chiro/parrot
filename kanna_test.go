@@ -67,3 +67,25 @@ func TestRotateLeft(t *testing.T) {
 		t.Errorf("got %v\nwant %v", sim.Grid, expected)
 	}
 }
+
+func TestMoveLeft(t *testing.T) {
+	var initial [4][4]int = [4][4]int{{1, 1, 1, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
+	var r random.Gen = &random.Std{}
+	var sim Kanna = Kanna{initial, 0, false, r.GetGenerator()}
+	sim.moveLeft()
+	var expected [4][4]int = [4][4]int{{2, 1, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
+	if sim.Grid != expected {
+		t.Errorf("got %v\nwant %v\n", sim.Grid, expected)
+	}
+}
+
+func TestMoveUp3(t *testing.T) {
+	var initial [4][4]int = [4][4]int{{1, 0, 0, 0}, {1, 0, 0, 0}, {1, 0, 0, 0}, {0, 0, 0, 0}}
+	var r random.Gen = &random.Std{}
+	var sim Kanna = Kanna{initial, 0, false, r.GetGenerator()}
+	sim.moveUp()
+	var expected [4][4]int = [4][4]int{{2, 0, 0, 0}, {1, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
+	if sim.Grid != expected {
+		t.Errorf("got %v\nwant %v\n", sim.Grid, expected)
+	}
+}
